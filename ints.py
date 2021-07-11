@@ -1,5 +1,6 @@
 import sys
 import re
+from subprocess import Popen, PIPE
 
 file = sys.argv[1]
 
@@ -52,15 +53,22 @@ def replace_one(file, replace):
     return payload
 
 def file_replace_one(file):
-    payload = replace_one(file, 0)
-    payload += replace_one(file, -1)
-    payload += replace_one(file, 99999)
-    payload += replace_one(file, -99999)
-    payload += replace_one(file, 1.5)
-    payload += replace_one(file, -1.5)
+    payload = []
+    payload.append(replace_one(file, 0))
+    payload.append(replace_one(file, -1))
+    payload.append(replace_one(file, 99999))
+    payload.append(replace_one(file, -99999))
+    payload.append(replace_one(file, 1.5))
+    payload.append(replace_one(file, -1.5))
 
-    return payload.strip()
+    return payload
 
-with open("badints.txt", "w") as f:
-    payload = file_replace_one(file)
-    f.write(payload)
+payload = file_replace_one(file)
+print(payload)
+
+for line in payload:
+    print(line)
+    proc = Popen(["./json1"], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
+    output, error = proc.communicate(bytes(line,'utf-8'))
+    print(output)
+    print(error)
