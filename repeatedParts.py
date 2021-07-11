@@ -2,6 +2,10 @@ import sys
 from pwn import *
 import json
 import imghdr
+import pipe
+import subprocess
+import os
+import re
 
 # Define input types
 TYPE_JPEG = 0
@@ -12,9 +16,9 @@ TYPE_PLAIN_TEXT = 4
 global inputtype
 
 def setInputType(x):
-	print("yalla")
 	global inputtype 
 	inputtype = x
+
 def r(p):
 	log.info(p.recvS(timeout=0.5))
 
@@ -101,6 +105,10 @@ def checkCSV(testInput):
 			print(separator)
 	return 0
 
+def runFuzzedInput(text, binary):
+	proc = subprocess.Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
+	output, error = proc.communicate(bytes(payload, 'utf-8')) 
+	return(proc.returncode)
 # get binary and input
 binary = sys.argv[1]
 testInput = sys.argv[2]
@@ -112,15 +120,61 @@ checkInput(testInput)
 print(inputtype)
 
 # Fuzz depending on input type
+payload = ''
+with open(testInput) as f:
+	text = f.read()
 # JSON
 if(inputtype == TYPE_JSON):
-	# read from " to : to get key
+	payload += '{'
+	# Repeat first key/val pair
 	with open(testInput) as f:
-		lines = f.readlines()
-		for line in lines:
-			# get the first key
-			c1 = '"'
-			c2 = ':'
-			print(line[line.find(c1):line.find(c2)])
-p.interactive()
+		text = f.read()
+		res = 0
+		for i in range(0, len(text)):
+			if text[i] == ',':
+				res = i + 1
+				break
+		# add the repeat
+		payload += text[1:res] * 2
+		# put the rest of the payload
+		payload += text[res:]
+	print(payload)
 
+# CSV
+val = 0
+badstr = []
+badpload = []
+codes = []
+crashes = 0
+if(inputtype == TYPE_CSV):
+	with open(testInput) as f:
+		text = f.read()
+
+		# Header stays intact
+		i = 24
+		while i < len(text) - 10:
+			for x in range(1, len(text)):
+				string = text[i:i+x]
+				payload += text[0:i] + string*60 + text[i:]
+				print(payload)
+				retCode = runFuzzedInput(payload, binary)
+				if(retCode != 0):
+					crashes += 1
+					val = 1337
+					badstr.append(string)
+					badpload.append(payload)
+					codes.append(retCode)
+				payload = ''
+			i += 1
+
+print("---STATS---")
+print("CRASHES: ", crashes)
+# print("CAUGHT STRINGS: ", badstr)
+# print("CAUGHT PAYLOADS: ", badpload)
+
+# print only unique codes
+u = []
+for i in codes:
+	if i not in u:
+		u.append(i)
+print("CAUGHT CODES: ", u)
