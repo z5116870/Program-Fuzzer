@@ -64,11 +64,12 @@ def file_replace_one(file):
     return payload
 
 payload = file_replace_one(file)
-print(payload)
+binary = "./" + file[:-4]
 
 for line in payload:
-    print(line)
-    proc = Popen(["./json1"], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
+    proc = Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
     output, error = proc.communicate(bytes(line,'utf-8'))
-    print(output)
-    print(error)
+    if(proc.returncode != 0):
+        print(line)
+        print(proc.returncode)
+        print(error)
