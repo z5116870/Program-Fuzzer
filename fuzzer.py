@@ -9,6 +9,7 @@ from subprocess import Popen, PIPE
 import signal
 
 seen_errors = {}
+
 def time_out_handler(signum, frame):
     print("Timing out, program ran for over 5 minutes")
     raise TimeoutError()
@@ -20,18 +21,27 @@ def create_crash_file(data, num):
     f.write(data)
     f.close()
 
-def runFuzzedInput(text, binary, num):
+def runFuzzedInput(text, binary, num, all_errors):
     proc = Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
     if not isinstance(text, bytearray):
         text = bytes(text, 'utf-8')
-    output, error = proc.communicate(text)
+    _, error = proc.communicate(text)
     if error and proc.returncode != 0:
+        all_errors += 1;
         if not proc.returncode in seen_errors:
             print("Found bad input error:", error, "\nProcess exited with code:", proc.returncode)
             create_crash_file(text, num)
             seen_errors[proc.returncode] = error;
             return num + 1
-    return num
+    return num, all_errors
+
+def print_errors_stats(numErrors, all_errors):
+    print("#### Fuzzing completed ####")
+    print("Total crashs found:", all_errors)
+    print("Total unique crashes:", numErrors)
+    print("Crashes found:")
+    for key in seen_errors.keys():
+        print("Exit code:", key, "Stderr:", seen_errors[key])
 
 if __name__ == "__main__":
     signal.signal(signal.SIGALRM, time_out_handler)
@@ -50,34 +60,38 @@ if __name__ == "__main__":
             f = file.read()
 
         numErrors = 0
+        all_errors = 0
         # for each strategy run each fuzzing strategy 5 times
         for i in range(0, 5):
             fuzzing_data = keyword_fuzzing(filename, filetype)
-            numErrors = runFuzzedInput(fuzzing_data, binary, numErrors)
+            numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors)
 
         for i in range(0, 5):
             fuzzing_data = bit_flipper(bytearray(f, 'utf-8'))
-            numErrors = runFuzzedInput(fuzzing_data, binary, numErrors)
+            numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors)
 
         for i in range(0, 5):
             fuzzing_data = byte_flipper(bytearray(f, 'utf-8'))
-            numErrors = runFuzzedInput(fuzzing_data, binary, numErrors)
+            numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors)
         
         for i in range(0, 5):
             fuzzing_data = special_bytes_flipper(bytearray(f, 'utf-8'))
-            numErrors = runFuzzedInput(fuzzing_data, binary, numErrors)
+            numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors)
 
         # Check for known ints
         payload = file_replace_one(filename)
         for line in payload:
-            numErrors = runFuzzedInput(line, binary, numErrors)
+            numErrors, all_errors = runFuzzedInput(line, binary, numErrors, all_errors)
 
         # Check for repeated part fuzzing 
         payloads = repeatedParts(filename, filetype)
         for payload in payloads:
-            numErrors = runFuzzedInput(payload, binary, numErrors)
+            numErrors, all_errors = runFuzzedInput(payload, binary, numErrors, all_errors)
         
         signal.alarm(0)
+
+        print_errors_stats(numErrors, all_errors)
+
 
 
 
