@@ -19,13 +19,6 @@ def setInputType(x):
 	global inputtype
 	inputtype = x
 
-def r(p):
-	log.info(p.recvS(timeout=0.5))
-
-def s(p, a):
-	p.sendline(a)
-	log.warn(str(a))
-
 # Check for input types
 def checkInput(testInput):
 	if(checkJPEG(testInput)):
