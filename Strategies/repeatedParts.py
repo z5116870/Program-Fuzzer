@@ -1,11 +1,5 @@
-import sys
 # from pwn import *
-import json
-import imghdr
-import pipe
 import subprocess
-import os
-import re
 from getFileType import FileType
 
 def runFuzzedInput(text, binary):
