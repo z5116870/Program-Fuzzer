@@ -37,7 +37,7 @@ def runFuzzedInput(text, binary, num, all_errors):
 
 def print_errors_stats(numErrors, all_errors):
     print("#### Fuzzing completed ####")
-    print("Total runtime:", str(time.thread_time()), "seconds")
+    print("Total runtime:", str(time.time.thread_time()), "seconds")
     print("Total crashs found:", all_errors)
     print("Total unique crashes:", numErrors)
     print("Crashes found:")
