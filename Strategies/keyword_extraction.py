@@ -71,7 +71,7 @@ def keyword_fuzzing(input, type = None, mutations = None):
     mutation_str = mutations
     if mutations is None:
         mutation_str = "random"
-    print("Fuzzing file:", input, "with type", type, "Number of keyword swaps:", mutation_str, "\n")
+    # print("Fuzzing file:", input, "with type", type, "Number of keyword swaps:", mutation_str, "\n")
 
     file = open(input)
     fuzzed_output = ""
@@ -83,7 +83,7 @@ def keyword_fuzzing(input, type = None, mutations = None):
         dictionary, file_data = csv_keyword_extract(file)
         fuzzed_output = csv_mutate_input(file_data, dictionary)
     else:
-        print("Type not supported or is none, output is not fuzzed")
+        # print("Type not supported or is none, output is not fuzzed")
         for line in file:
             fuzzed_output += line
     file.close()
