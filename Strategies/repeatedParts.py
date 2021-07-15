@@ -1,5 +1,5 @@
 import sys
-from pwn import *
+# from pwn import *
 import json
 import imghdr
 import pipe
@@ -61,7 +61,7 @@ def run(binary, testInput):
 	badpload = []
 	codes = []
 	crashes = 0
-	p = process(binary)
+	# p = process(binary)
 	print("running fuzzed inputs...: " + binary)
 	for payload in payloads:
 		retCode = runFuzzedInput(payload, binary)
