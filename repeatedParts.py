@@ -129,9 +129,8 @@ if(inputtype == TYPE_JSON):
 	print(payload)
 '''
 # CSV
-def repeatedParts():
+def repeatedParts(binary):
 	# get binary and input
-	binary = sys.argv[1]
 	testInput = sys.argv[2]
 	p = process(binary)
 	print("running: " + binary)
@@ -147,6 +146,7 @@ def repeatedParts():
 	badpload = []
 	codes = []
 	crashes = 0
+	print("running repeated parts method...")
 	if(inputtype == TYPE_CSV or inputtype == TYPE_JSON):
 		with open(testInput) as f:
 			text = f.read()
