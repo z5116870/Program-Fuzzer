@@ -74,5 +74,5 @@ def checkCSV(testInput):
 				if(element != 0):
 					return 1
 			# if not, clear the list, increment separator and run again
-			countSeparators = []
+			countSeparators.clear()
 	return 0
