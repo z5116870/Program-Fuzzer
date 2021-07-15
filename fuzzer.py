@@ -34,7 +34,7 @@ def runFuzzedInput(text, binary, num):
     return num
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGALARM, time_out_handler)
+    signal.signal(signal.SIGALRM, time_out_handler)
     signal.alarm(300)
 
     args = len(sys.argv)
