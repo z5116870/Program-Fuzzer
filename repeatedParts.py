@@ -129,9 +129,7 @@ if(inputtype == TYPE_JSON):
 	print(payload)
 '''
 # CSV
-def repeatedParts(binary):
-	# get binary and input
-	testInput = sys.argv[2]
+def repeatedParts(binary, testInput):
 	p = process(binary)
 	print("running: " + binary)
 
