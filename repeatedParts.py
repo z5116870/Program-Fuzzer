@@ -157,7 +157,6 @@ def repeatedParts():
 				for x in range(1, len(text) - i):
 					string = text[i:i+x]
 					payload += text[0:i] + string*14 + text[i:]
-					print(payload)
 					retCode = runFuzzedInput(payload, binary)
 					if(retCode != 0):
 						crashes += 1
@@ -167,23 +166,28 @@ def repeatedParts():
 						codes.append(retCode)
 					payload = ''
 				i += 1
+	# Below line is my version of a harness, prints payloads that cause
+	# errors while using repeated parts method.
+	#printStats(crashes, badstr, badpload, codes)
+	return badpload
 
-		print("---STATS---")
-		print("CRASHES: ", crashes)
-		print("CAUGHT REPEATED STRINGS:")
-		i = 0
-		x = 0
-		for string in badstr:
-			print(i, ': ', string)
-			i += 1
-		print("CAUGHT PAYLOADS:")
-		for pload in badpload:
-			print(x,': ', pload)
-			x += 1
+def printStats(crashes, badstr, badpload, codes):
+	print("---STATS---")
+	print("CRASHES: ", crashes)
+	print("CAUGHT REPEATED STRINGS:")
+	i = 0
+	x = 0
+	for string in badstr:
+		print(i, ': ', string)
+		i += 1
+	print("CAUGHT PAYLOADS:")
+	for pload in badpload:
+		print(x,': ', pload)
+		x += 1
 
-		# print only unique codes
-		u = []
-		for i in codes:
-			if i not in u:
-				u.append(i)
-		print("CAUGHT CODES: ", u)
+	# print only unique codes
+	u = []
+	for i in codes:
+		if i not in u:
+			u.append(i)
+	print("CAUGHT CODES: ", u)
