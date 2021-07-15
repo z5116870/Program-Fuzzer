@@ -1,6 +1,6 @@
 # from pwn import *
 import subprocess
-from getFileType import FileType
+from Strategies.getFileType import FileType, getFileType
 
 def runFuzzedInput(text, binary):
 	proc = subprocess.Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)

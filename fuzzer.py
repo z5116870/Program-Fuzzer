@@ -6,8 +6,12 @@ from Strategies.keyword_extraction import keyword_fuzzing
 from Strategies.getFileType import FileType, getFileType
 import time
 from subprocess import Popen, PIPE
+import signal
 
 seen_errors = {}
+def time_out_handler(signum, frame):
+    print("Timing out, program ran for over 5 minutes")
+    raise TimeoutError()
 
 def create_crash_file(data, num):
     f = open("bad" + str(num) + ".txt", "wb+")
@@ -30,6 +34,9 @@ def runFuzzedInput(text, binary, num):
     return num
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGALARM, time_out_handler)
+    signal.alarm(300)
+
     args = len(sys.argv)
     if (args < 3):
         print("Usage: ./fuzzer <binary> <input_file>")
@@ -43,8 +50,6 @@ if __name__ == "__main__":
             f = file.read()
 
         numErrors = 0
-
-        start_time = time.time()
         # for each strategy run each fuzzing strategy 5 times
         for i in range(0, 5):
             fuzzing_data = keyword_fuzzing(filename, filetype)
@@ -68,9 +73,13 @@ if __name__ == "__main__":
             numErrors = runFuzzedInput(line, binary, numErrors)
 
         # Check for repeated part fuzzing 
-        payloads = repeatedParts(filename)
+        payloads = repeatedParts(filename, filetype)
+        print(len(payloads))
         for payload in payloads:
+            print(payload)
             numErrors = runFuzzedInput(payload, binary, numErrors)
+        
+        signal.alarm(0)
 
 
 
