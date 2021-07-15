@@ -2,8 +2,6 @@ import sys
 import re
 from subprocess import Popen, PIPE
 
-file = sys.argv[1]
-
 #replaces all numbers in a file to a desired number
 def replace_all(file, int):
     payload = ""
@@ -63,13 +61,16 @@ def file_replace_one(file):
 
     return payload
 
-payload = file_replace_one(file)
-binary = "./" + file[:-4]
+if __name__ == "__main__":
+    file = sys.argv[1]
 
-for line in payload:
-    proc = Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
-    output, error = proc.communicate(bytes(line,'utf-8'))
-    if(proc.returncode != 0):
-        print(line)
-        print(proc.returncode)
-        print(error)
+    payload = file_replace_one(file)
+    binary = "./" + file[:-4]
+
+    for line in payload:
+        proc = Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
+        output, error = proc.communicate(bytes(line,'utf-8'))
+        if(proc.returncode != 0):
+            print(line)
+            print(proc.returncode)
+            print(error)

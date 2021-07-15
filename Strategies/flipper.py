@@ -6,9 +6,6 @@ import sys
 
 bytes_array = [1, 2, 4, 8, 16, 32, 64, 128]
 
-with open(sys.argv[1], 'rb') as file:
-    f = file.read()
-
 def bit_flipper(data):
 
     length_of_data = len(data)
@@ -34,8 +31,10 @@ def special_bytes_flipper(data):
     extreme_bytes = random.choice([[0xFF, 0xFF, 0xFF, 0xFF], [0x00, 0x00, 0x00, 0x00], [0x00, 0x00, 0x00, 0x80], [0xFF, 0xFF, 0xFF, 0x7F], [0x00, 0x00, 0x00, 0x40], [0x00, 0x00], 
                  [0xFF, 0xFF], [0xFF], [0x7F], [0x00]])
 
-
+    offset = 0
     for i in range(len(extreme_bytes)):
+        if (index_to_flip + i >= length_of_data):
+            return data
         data[index_to_flip + i] = extreme_bytes[i]
         offset += 1
     return data
@@ -47,7 +46,7 @@ def create_crash_file(data):
     f.write(data)
     f.close()
 
-def run():
+def run(f):
     # while True:
     start_time = time.time()
     while time.time() - start_time < 180:
@@ -75,4 +74,7 @@ def run():
         except:
             pass
 
-run()
+if __name__ == "__main__":
+    with open(sys.argv[1], 'rb') as file:
+        f = file.read()
+    run(f)

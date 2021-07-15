@@ -87,9 +87,10 @@ def keyword_fuzzing(input, type = None, mutations = None):
         for line in file:
             fuzzed_output += line
     file.close()
-    print(fuzzed_output)
+    # print(fuzzed_output)
     return fuzzed_output
 
-keyword_fuzzing("assignment/csv1.txt", "csv")
-keyword_fuzzing("assignment/json1.txt", "json")
-keyword_fuzzing("assignment/plaintext1.txt", "")
+# if __name__ == "__main__":
+    # keyword_fuzzing("assignment/csv1.txt", "csv")
+    # keyword_fuzzing("assignment/json1.txt", "json")
+    # keyword_fuzzing("assignment/plaintext1.txt", "")
