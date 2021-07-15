@@ -8,6 +8,11 @@ import os
 import re
 from getFileType import FileType
 
+def runFuzzedInput(text, binary):
+	proc = subprocess.Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
+	output, error = proc.communicate(bytes(text, 'utf-8'))
+	return(proc.returncode)
+
 # JSON
 '''
 if(inputtype == TYPE_JSON):
@@ -27,14 +32,11 @@ if(inputtype == TYPE_JSON):
 	print(payload)
 '''
 # CSV
-def repeatedParts(inputtype, testInput):
+def repeatedParts(testInput, inputtype):
+
 	# Fuzz depending on input type
 	payload = ''
-	val = 0
-	badstr = []
-	badpload = []
-	codes = []
-	crashes = 0
+	payloads = []
 	if(inputtype == FileType.csv or inputtype == FileType.json):
 		with open(testInput) as f:
 			text = f.read()
@@ -45,33 +47,43 @@ def repeatedParts(inputtype, testInput):
 				for x in range(1, len(text) - i):
 					string = text[i:i+x]
 					payload += text[0:i] + string*14 + text[i:]
-					print(payload)
-					retCode = runFuzzedInput(payload, binary)
-					if(retCode != 0):
-						crashes += 1
-						val = 1337
-						badstr.append(string)
-						badpload.append(payload)
-						codes.append(retCode)
+					payloads.append(payload)
 					payload = ''
 				i += 1
+	# Below line is my version of a harness, prints payloads that cause
+	# errors while using repeated parts method.
+	return payloads
 
-		print("---STATS---")
-		print("CRASHES: ", crashes)
-		print("CAUGHT REPEATED STRINGS:")
-		i = 0
-		x = 0
-		for string in badstr:
-			print(i, ': ', string)
-			i += 1
-		print("CAUGHT PAYLOADS:")
-		for pload in badpload:
-			print(x,': ', pload)
-			x += 1
+def run(binary, testInput):
+	print("making fuzzed inputs...")
+	payloads = repeatedParts(testInput)
+	print("Done.")
+	badpload = []
+	codes = []
+	crashes = 0
+	p = process(binary)
+	print("running fuzzed inputs...: " + binary)
+	for payload in payloads:
+		retCode = runFuzzedInput(payload, binary)
+		if(retCode != 0):
+			crashes += 1
+			badpload.append(payload)
+			codes.append(retCode)
+	printStats(crashes, badpload, codes)
 
-		# print only unique codes
-		u = []
-		for i in codes:
-			if i not in u:
-				u.append(i)
-		print("CAUGHT CODES: ", u)
+def printStats(crashes, badpload, codes):
+	print("---STATS---")
+	print("CRASHES: ", crashes)
+	print("CAUGHT PAYLOADS:")
+	i = 0
+	x = 0
+	for pload in badpload:
+		print(x,': ', pload)
+		x += 1
+
+	# print only unique codes
+	u = []
+	for i in codes:
+		if i not in u:
+			u.append(i)
+	print("CAUGHT CODES: ", u)

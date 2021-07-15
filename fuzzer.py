@@ -1,7 +1,7 @@
 import sys
 from Strategies.ints import file_replace_one
 from Strategies.flipper import bit_flipper, byte_flipper, special_bytes_flipper
-# from Strategies.repeatedParts import
+from Strategies.repeatedParts import repeatedParts
 from Strategies.keyword_extraction import keyword_fuzzing
 from Strategies.getFileType import FileType, getFileType
 import time
@@ -66,6 +66,11 @@ if __name__ == "__main__":
         payload = file_replace_one(filename)
         for line in payload:
             numErrors = runFuzzedInput(line, binary, numErrors)
+
+        # Check for repeated part fuzzing 
+        payloads = repeatedParts(filename)
+        for payload in payloads:
+            numErrors = runFuzzedInput(payload, binary, numErrors)
 
 
 
