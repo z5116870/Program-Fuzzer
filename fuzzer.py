@@ -26,8 +26,6 @@ def runFuzzedInput(text, binary, num):
             print("Found bad input error:", error, "\nProcess exited with code:", proc.returncode)
             create_crash_file(text, num)
             seen_errors[proc.returncode] = error;
-            print(seen_errors)
-            print(text)
             return num + 1
     return num
 
