@@ -74,9 +74,7 @@ if __name__ == "__main__":
 
         # Check for repeated part fuzzing 
         payloads = repeatedParts(filename, filetype)
-        print(len(payloads))
         for payload in payloads:
-            print(payload)
             numErrors = runFuzzedInput(payload, binary, numErrors)
         
         signal.alarm(0)
