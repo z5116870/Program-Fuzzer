@@ -41,8 +41,6 @@ def checkInput(testInput):
 	# rest of files can be read using open
 	with open(testInput) as f:
 		text = f.read()
-		print(len(text))
-		print(text)
 
 	if(checkJSON(text)):
 		print("input type: JSON")
@@ -92,7 +90,6 @@ def checkCSV(testInput):
 				# count amount of separators per line
 				countSeparators.append(line.count(separator))
 				i += 1
-			print(countSeparators)
 			# check that the amount of separators per line is equal
 			result = all(element == countSeparators[0] for element in countSeparators)
 			if(result and countSeparators != []):
@@ -102,7 +99,6 @@ def checkCSV(testInput):
 					return 1
 			# if not, clear the list, increment separator and run again
 			countSeparators.clear()
-			print(separator)
 	return 0
 
 def runFuzzedInput(text, binary):
@@ -129,22 +125,13 @@ if(inputtype == TYPE_JSON):
 	print(payload)
 '''
 # CSV
-def repeatedParts(binary, testInput):
-	p = process(binary)
-	print("running: " + binary)
-
+def repeatedParts(testInput):
 	# Get input type
 	checkInput(testInput)
-	print(inputtype)
 
 	# Fuzz depending on input type
 	payload = ''
-	val = 0
-	badstr = []
-	badpload = []
-	codes = []
-	crashes = 0
-	print("running repeated parts method...")
+	payloads = []
 	if(inputtype == TYPE_CSV or inputtype == TYPE_JSON):
 		with open(testInput) as f:
 			text = f.read()
@@ -155,30 +142,36 @@ def repeatedParts(binary, testInput):
 				for x in range(1, len(text) - i):
 					string = text[i:i+x]
 					payload += text[0:i] + string*14 + text[i:]
-					retCode = runFuzzedInput(payload, binary)
-					if(retCode != 0):
-						crashes += 1
-						val = 1337
-						badstr.append(string)
-						badpload.append(payload)
-						codes.append(retCode)
+					payloads.append(payload)
 					payload = ''
 				i += 1
 	# Below line is my version of a harness, prints payloads that cause
 	# errors while using repeated parts method.
-	#printStats(crashes, badstr, badpload, codes)
-	return badpload
+	return payloads
 
-def printStats(crashes, badstr, badpload, codes):
+def run(binary, testInput):
+	print("making fuzzed inputs...")
+	payloads = repeatedParts(testInput)
+	print("Done.")
+	badpload = []
+	codes = []
+	crashes = 0
+	p = process(binary)
+	print("running fuzzed inputs...: " + binary)
+	for payload in payloads:
+		retCode = runFuzzedInput(payload, binary)
+		if(retCode != 0):
+			crashes += 1
+			badpload.append(payload)
+			codes.append(retCode)
+	printStats(crashes, badpload, codes)
+
+def printStats(crashes, badpload, codes):
 	print("---STATS---")
 	print("CRASHES: ", crashes)
-	print("CAUGHT REPEATED STRINGS:")
+	print("CAUGHT PAYLOADS:")
 	i = 0
 	x = 0
-	for string in badstr:
-		print(i, ': ', string)
-		i += 1
-	print("CAUGHT PAYLOADS:")
 	for pload in badpload:
 		print(x,': ', pload)
 		x += 1
