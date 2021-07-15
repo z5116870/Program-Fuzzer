@@ -107,22 +107,9 @@ def checkCSV(testInput):
 
 def runFuzzedInput(text, binary):
 	proc = subprocess.Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
-	output, error = proc.communicate(bytes(payload, 'utf-8'))
+	output, error = proc.communicate(bytes(text, 'utf-8'))
 	return(proc.returncode)
-# get binary and input
-binary = sys.argv[1]
-testInput = sys.argv[2]
-p = process(binary)
-print("running: " + binary)
 
-# Get input type
-checkInput(testInput)
-print(inputtype)
-
-# Fuzz depending on input type
-payload = ''
-with open(testInput) as f:
-	text = f.read()
 # JSON
 '''
 if(inputtype == TYPE_JSON):
@@ -142,48 +129,61 @@ if(inputtype == TYPE_JSON):
 	print(payload)
 '''
 # CSV
-val = 0
-badstr = []
-badpload = []
-codes = []
-crashes = 0
-if(inputtype == TYPE_CSV or inputtype == TYPE_JSON):
-	with open(testInput) as f:
-		text = f.read()
+def repeatedParts():
+	# get binary and input
+	binary = sys.argv[1]
+	testInput = sys.argv[2]
+	p = process(binary)
+	print("running: " + binary)
 
-		# Header stays intact
-		i = 5
-		while i < len(text) - 10:
-			for x in range(1, len(text)):
-				string = text[i:i+x]
-				payload += text[0:i] + string*10 + text[i:]
-				print(payload)
-				retCode = runFuzzedInput(payload, binary)
-				if(retCode != 0):
-					crashes += 1
-					val = 1337
-					badstr.append(string)
-					badpload.append(payload)
-					codes.append(retCode)
-				payload = ''
+	# Get input type
+	checkInput(testInput)
+	print(inputtype)
+
+	# Fuzz depending on input type
+	payload = ''
+	val = 0
+	badstr = []
+	badpload = []
+	codes = []
+	crashes = 0
+	if(inputtype == TYPE_CSV or inputtype == TYPE_JSON):
+		with open(testInput) as f:
+			text = f.read()
+
+			# Header stays intact
+			i = 1
+			while i < len(text):
+				for x in range(1, len(text) - i):
+					string = text[i:i+x]
+					payload += text[0:i] + string*14 + text[i:]
+					print(payload)
+					retCode = runFuzzedInput(payload, binary)
+					if(retCode != 0):
+						crashes += 1
+						val = 1337
+						badstr.append(string)
+						badpload.append(payload)
+						codes.append(retCode)
+					payload = ''
+				i += 1
+
+		print("---STATS---")
+		print("CRASHES: ", crashes)
+		print("CAUGHT REPEATED STRINGS:")
+		i = 0
+		x = 0
+		for string in badstr:
+			print(i, ': ', string)
 			i += 1
+		print("CAUGHT PAYLOADS:")
+		for pload in badpload:
+			print(x,': ', pload)
+			x += 1
 
-print("---STATS---")
-print("CRASHES: ", crashes)
-print("CAUGHT REPEATED STRINGS:")
-i = 0
-x = 0
-for string in badstr:
-	print(i, ': ', string)
-	i += 1
-print("CAUGHT PAYLOADS:")
-for pload in badpload:
-	print(x,': ', pload)
-	x += 1
-
-# print only unique codes
-u = []
-for i in codes:
-	if i not in u:
-		u.append(i)
-print("CAUGHT CODES: ", u)
+		# print only unique codes
+		u = []
+		for i in codes:
+			if i not in u:
+				u.append(i)
+		print("CAUGHT CODES: ", u)
