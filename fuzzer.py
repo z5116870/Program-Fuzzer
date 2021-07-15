@@ -47,7 +47,7 @@ if __name__ == "__main__":
         numErrors = 0
 
         start_time = time.time()
-        for each strategy run each fuzzing strategy 5 times
+        # for each strategy run each fuzzing strategy 5 times
         for i in range(0, 5):
             fuzzing_data = keyword_fuzzing(filename, filetype)
             numErrors = runFuzzedInput(fuzzing_data, binary, numErrors)
