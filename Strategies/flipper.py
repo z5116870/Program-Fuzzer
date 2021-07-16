@@ -46,6 +46,8 @@ def create_crash_file(data):
     f.write(data)
     f.close()
 
+
+
 def run(f):
     # while True:
     start_time = time.time()
@@ -74,7 +76,7 @@ def run(f):
         except:
             pass
 
-if __name__ == "__main__":
-    with open(sys.argv[1], 'rb') as file:
-        f = file.read()
-    run(f)
+# if __name__ == "__main__":
+#     with open(sys.argv[1], 'rb') as file:
+#         f = file.read()
+#     run(f)

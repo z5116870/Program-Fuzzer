@@ -29,7 +29,7 @@ def time_out_handler(signum, frame):
     raise TimeoutError()
 
 def create_crash_file(data, num):
-    f = open("bad" + str(num) + ".txt", "wb+")
+    f = open("bad.txt", "wb+")
     if not isinstance(data, bytearray) and not isinstance(data, bytes):
         data = bytes(data, 'utf-8')
     f.write(data)
@@ -87,15 +87,15 @@ if __name__ == "__main__":
             fuzzing_data = keyword_fuzzing(filename, filetype)
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.KEYWORDEXTRACTION)
 
-        for i in range(0, 5):
+        for i in range(0, 1000):
             fuzzing_data = bit_flipper(bytearray(f, 'utf-8'))
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.BITFLIP)
 
-        for i in range(0, 5):
+        for i in range(0, 1000):
             fuzzing_data = byte_flipper(bytearray(f, 'utf-8'))
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.BYTEFLIP)
         
-        for i in range(0, 5):
+        for i in range(0, 1000):
             fuzzing_data = special_bytes_flipper(bytearray(f, 'utf-8'))
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.SPECIALBYTEFLIPS)
 
