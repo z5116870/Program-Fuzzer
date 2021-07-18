@@ -47,7 +47,7 @@ def runFuzzedInput(text, binary, num, all_errors, strat):
             create_crash_file(text, num)
             seen_errors[proc.returncode] = error;
             strategies_used[proc.returncode] = strat.name
-            payload_files[proc.returncode] = "bad" + str(num) + ".txt"
+            payload_files[proc.returncode] = "bad.txt"
             return num + 1, all_errors
     return num, all_errors
 
