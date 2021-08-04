@@ -4,7 +4,7 @@
 
 //Testing for known ints
 //It allows users to pass in any number as the buffer size without checking
-//Not error checking if malloc succeeds
+//No error checking if malloc succeeds
 void vuln() {
     int buffer_size;
     printf("Enter a size for your buffer\n");
