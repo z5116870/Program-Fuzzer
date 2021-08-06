@@ -1,9 +1,12 @@
 # from pwn import *
-import subprocess
-from Strategies.getFileType import FileType, getFileType
+import sys
+from subprocess import Popen, PIPE
+from getFileType import FileType, getFileType
+from bs4 import BeautifulSoup as BS
+import re
 
 def runFuzzedInput(text, binary):
-	proc = subprocess.Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
+	proc = Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
 	output, error = proc.communicate(bytes(text, 'utf-8'))
 	return(proc.returncode)
 
@@ -31,10 +34,9 @@ def repeatedParts(testInput, inputtype):
 	# Fuzz depending on input type
 	payload = ''
 	payloads = []
+	with open(testInput) as f:
+		text = f.read()
 	if(inputtype == FileType.csv or inputtype == FileType.json):
-		with open(testInput) as f:
-			text = f.read()
-
 			# Header stays intact
 			i = 1
 			while i < len(text):
@@ -44,13 +46,48 @@ def repeatedParts(testInput, inputtype):
 					payloads.append(payload)
 					payload = ''
 				i += 1
-	# Below line is my version of a harness, prints payloads that cause
-	# errors while using repeated parts method.
+
+	if(inputtype == FileType.xml):
+		with open(testInput) as f:
+			soup = BS(f, features='lxml')
+		# First, find all the tags in the xml		
+		tags = []
+		for tag in soup.find_all(True):
+			print(tag.name)
+			tags.append(tag.name)
+
+		# Method 1, repeat everything between the tags
+		for tag in tags:
+			text = str(soup)
+			x = text.find(tag)
+
+			# Get the entire tag and contents
+			xmlstr = str(soup.find(tag))		
+
+			# add the repeated text just after the tag
+			y = len(xmlstr)
+			index = x + y
+			payload = text[:index] + xmlstr*2 + text[index:]
+			
+			# add it to the payloads
+			print(payload)
+			payloads.append(payload)
+			payload = ''
+
+		# Method 2, repeat the tag text, within the tag itself
+		for tag in tags:
+			tagtext = soup.find(tag).text
+			print('-------')
+			print(tagtext)
+	if(inputtype == FileType.plaintext):
+		payload = text*10000
+		payloads.append(payload)
 	return payloads
 
 def run(binary, testInput):
 	print("making fuzzed inputs...")
-	payloads = repeatedParts(testInput)
+	inputtype = getFileType(testInput)
+	payloads = repeatedParts(testInput, inputtype)
 	print("Done.")
 	badpload = []
 	codes = []
@@ -81,3 +118,5 @@ def printStats(crashes, badpload, codes):
 		if i not in u:
 			u.append(i)
 	print("CAUGHT CODES: ", u)
+
+run(sys.argv[1], sys.argv[2])
