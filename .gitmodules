@@ -1,0 +1,3 @@
+[submodule "fuzzer_with_cvg"]
+	path = fuzzer_with_cvg
+	url = ./fuzzer_with_cvg
