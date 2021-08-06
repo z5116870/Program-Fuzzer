@@ -37,6 +37,10 @@ def create_crash_file(data, num):
 
 def runFuzzedInput(text, binary, num, all_errors, strat):
     proc = Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
+    # Detect infinite loop
+    # Check ptrace output
+    # For every for, while loop found, check how many times its been called
+    # If more than X, return infinite hang error
     if not isinstance(text, bytearray):
         text = bytes(text, 'utf-8')
     _, error = proc.communicate(text)
@@ -94,7 +98,7 @@ if __name__ == "__main__":
         for i in range(0, 1000):
             fuzzing_data = byte_flipper(bytearray(f, 'utf-8'))
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.BYTEFLIP)
-        
+
         for i in range(0, 1000):
             fuzzing_data = special_bytes_flipper(bytearray(f, 'utf-8'))
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.SPECIALBYTEFLIPS)
@@ -104,15 +108,11 @@ if __name__ == "__main__":
         for line in payload:
             numErrors, all_errors = runFuzzedInput(line, binary, numErrors, all_errors, StrategyType.KNOWNINTS)
 
-        # Check for repeated part fuzzing 
+        # Check for repeated part fuzzing
         payloads = repeatedParts(filename, filetype)
         for payload in payloads:
             numErrors, all_errors = runFuzzedInput(payload, binary, numErrors, all_errors, StrategyType.REPEATEDPARTS)
-        
+
         signal.alarm(0)
 
         print_errors_stats(numErrors, all_errors, start_time)
-
-
-
-
