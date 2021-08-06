@@ -1,3 +1,4 @@
+//Referenced from https://www.geeksforgeeks.org/program-evaluate-simple-expressions/
 #include <stdio.h>
 
 int isOperand(char c) { 
