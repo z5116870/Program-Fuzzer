@@ -1,5 +1,11 @@
 # COMP6447 Fuzzer Assignment
 
+Installation
+
+Unix:
+   sudo apt-get install python3-magic
+
+
 Usage: python3 fuzzer.py \<path to binary\> \<path to input\>
 
 
