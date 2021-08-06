@@ -31,7 +31,9 @@ def repeatedParts(testInput, inputtype):
 	# Fuzz depending on input type
 	payload = ''
 	payloads = []
+
 	if(inputtype == FileType.csv or inputtype == FileType.json):
+		# print("True")
 		with open(testInput) as f:
 			text = f.read()
 

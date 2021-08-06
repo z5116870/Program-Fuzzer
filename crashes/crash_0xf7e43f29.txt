@@ -1,0 +1,5 @@
+{
+    "len": -1.5,
+    "input": "AAAABBBBCCCC",
+    "move_data": ["a", "bb"]
+}

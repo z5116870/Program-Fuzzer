@@ -89,6 +89,7 @@ if __name__ == "__main__":
 
         for i in range(0, 1000):
             fuzzing_data = bit_flipper(bytearray(f, 'utf-8'))
+            print(fuzzing_data)
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.BITFLIP)
 
         for i in range(0, 1000):

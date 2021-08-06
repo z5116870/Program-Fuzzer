@@ -1,5 +1,5 @@
 {
-    "len": 92,
+    "len": -1.5,
     "input": "AAAABBBBCCCC",
     "more_data": ["a", "bb"]
 }
