@@ -1,37 +1,65 @@
 from enum import Enum
 import json
 import imghdr
+import magic
+import csv
+
+CSV_DELIMITER = ','
 
 class FileType(Enum):
-    plaintext = 0
-    json = 1
-    xml = 2
-    csv = 3
-    jpeg = 4
-    elf = 5
-    pdf = 6
+	plaintext = 0
+	json = 1
+	xml = 2
+	csv = 3
+	jpeg = 4
+	elf = 5
+	pdf = 6
+	unhandled = 7
 
-# Check for input types
-def getFileType(testInput):
-	if(checkJPEG(testInput)):
+def customFileTypeCheck(filename):
+	if(checkJPEG(filename)):
 		return FileType.jpeg
 
-	if(checkCSV(testInput)):
-		return FileType.csv
-
 	# rest of files can be read using open
-	with open(testInput) as f:
-		text = f.read()
-		# print(len(text))
-		# print(text)
+	try:
+		with open(filename) as f:
+			text = f.read()
+			# print(len(text))
+			# print(text)
 
-	if(checkJSON(text)):
-		return FileType.json
+		if(checkJSON(text)):
+			return FileType.json
 
-	if(checkXML(text)):
+		if(checkXML(text)):
+			return FileType.xml
+
+		if(csvSniffer(filename)):
+			return FileType.csv
+	except:
+		return FileType.unhandled
+	else:
+		return FileType.plaintext
+
+# Check for input types
+def getFileType(filename):
+	fileTypeStr = magic.from_file(filename)
+
+	# For some reason my version of magic 
+	# cant identify the difference between 
+	# csv, plaintext and json so we need to 
+	# check those manually
+	if (fileTypeStr.startswith("ASCII")):
+		return customFileTypeCheck(filename)
+	elif (fileTypeStr.startswith("HTML")):
 		return FileType.xml
-
-	return FileType.plaintext
+	elif (fileTypeStr.startswith("ELF")):
+		return FileType.elf
+	elif (fileTypeStr.startswith("PDF")):
+		return FileType.pdf
+	elif (fileTypeStr.startswith("JPEG")):
+		return FileType.jpeg
+	else:
+		return customFileTypeCheck(filename)
 
 # JSON
 def checkJSON(text):
@@ -76,3 +104,22 @@ def checkCSV(testInput):
 			# if not, clear the list, increment separator and run again
 			countSeparators.clear()
 	return 0
+
+def csvSniffer(filename):
+	lowercase = [chr(x) for x in range(ord('a'), ord('z') + 1)]
+	uppercase = [chr(x) for x in range(ord('A'), ord('Z') + 1)]
+	numbers = [chr(x) for x in range(ord('0'), ord('9')+1)]
+
+	invalidDelimiters = lowercase + uppercase + numbers
+	try:
+		with open(filename) as f:
+			dialect = csv.Sniffer().sniff(f.read(2048))
+			if dialect.delimiter in invalidDelimiters:
+				return 0
+			else:
+				CSV_DELIMETER = dialect.delimiter
+				return 1
+	except:
+		return 0
+	else:
+		return 0
