@@ -3,7 +3,7 @@
 
 //Testing for buffer overflow
 void vuln() {
-  char buf[64];
+  char buf[24];
   setbuf(stdout, NULL);
   gets(buf);
 }
