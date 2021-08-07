@@ -53,7 +53,7 @@ def breakpoint_addresses(address):
     #output = "{}: ".format(func.name)
     output = ""
     # for bb in func:
-    print(f'{func} : {hex(filtered_functions[func])}')
+    # print(f'{func} : {hex(filtered_functions[func])}')
 
     bp_list.append(hex(filtered_functions[func]))
 
