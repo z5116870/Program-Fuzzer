@@ -2,8 +2,18 @@
 #include <string.h>
 #include <stdlib.h>
 
-int main(void){
-    FILE* file = fopen("jpeg1.jpg", "rb");
+int main(int argc, char *argv[]){
+    if(argc != 2){
+        printf("Usage: ./checkJPEG file.jpeg\n");
+        exit(1);
+    }
+
+    FILE* file = fopen(argv[1], "rb");
+    if(file == NULL){
+        printf("Error opening file %s\n", argv[1]);
+        exit(1);
+    }
+    
     fseek(file, 0, SEEK_END);
     unsigned long fileLen=ftell(file);
     char* file_data;
@@ -20,4 +30,6 @@ int main(void){
 
     printf("file contents: %s", file_data);
     fclose(file);
+
+    return 0;
 }
