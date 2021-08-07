@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
         filetype = getFileType(filename)
 
-        with open(filename) as file:
+        with open(filename, errors='ignore') as file:
             f = file.read()
 
         numErrors = 0
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         for i in range(0, 1000):
             fuzzing_data = byte_flipper(bytearray(f, 'utf-8'))
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.BYTEFLIP)
-        
+
         for i in range(0, 1000):
             fuzzing_data = special_bytes_flipper(bytearray(f, 'utf-8'))
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.SPECIALBYTEFLIPS)
