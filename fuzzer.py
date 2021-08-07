@@ -142,14 +142,22 @@ if __name__ == "__main__":
         # Check for known ints
         payload = file_replace_one(filename)
         for line in payload:
+            inp = open(inFile, 'w')
+            inp.write(line)
             numErrors, all_errors = runFuzzedInput(line, binary, numErrors, all_errors, StrategyType.KNOWNINTS)
+
         # Check for repeated part fuzzing
         payloads = repeatedParts(filename, filetype)
         for payload in payloads:
+            inp = open(inFile, 'w')
+            inp.write(line)
             numErrors, all_errors = runFuzzedInput(payload, binary, numErrors, all_errors, StrategyType.REPEATEDPARTS)
+
 	# Check for arithmetic fuzzing
         payloads = arithmetic(filename, filetype)
         for payload in payloads:
+            inp = open(inFile, 'w')
+            inp.write(line)
             numErrors, all_errors = runFuzzedInput(payload, binary, numErrors, all_errors, StrategyType.ARITHMETIC)
 
 
