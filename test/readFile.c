@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[]){
     if(argc != 2){
-        printf("Usage: ./checkJPEG file.jpeg\n");
+        printf("Usage: ./readFile file.jpeg\n");
         exit(1);
     }
 
