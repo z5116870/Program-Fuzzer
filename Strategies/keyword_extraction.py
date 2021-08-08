@@ -1,6 +1,7 @@
 import json
 import random
-from Strategies.getFileType import FileType, CSV_DELIMITER
+from Strategies.getFileType import FileType
+import Strategies.csv_delimiter as csv_delimiter
 from xmljson import badgerfish as bf
 # https://pypi.org/project/xmljson/
 from xml.etree.ElementTree import Element, tostring, fromstring
@@ -99,18 +100,22 @@ def json_mutate_input(data, dictionary, dict=False):
     return json.dumps(data)
 
 def csv_keyword_extract(data):
-    return keyword_extract(data, CSV_DELIMITER)
+    # print(csv_delimiter.CSV_DELIMITER)
+    return keyword_extract(data, csv_delimiter.CSV_DELIMITER)
 
 def csv_mutate_input(data, dictionary):
+    if (len(data) < 1 or len(dictionary) < 1):
+        return ""
     random_keyword_index = random.randint(0, len(dictionary)-1)
     random_csv_keyword_index = random.randint(0, len(data)-1)
 
     # 1 in 4 runs don't do a random mutation
     global RUN_COUNT
-    if (RUN_COUNT % 4 == 0):
+    if (RUN_COUNT % 4 == 0  and len(dictionary) >= 2):
         random_keyword_index = 1
 
     if (len(data) == 1):
+        print(data, dictionary)
         data[0] = dictionary[random_keyword_index]
 
     words_to_replace = random.randint(0, len(data) -1)

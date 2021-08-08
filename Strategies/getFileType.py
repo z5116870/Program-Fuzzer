@@ -3,8 +3,7 @@ import json
 import imghdr
 import magic
 import csv
-
-CSV_DELIMITER = ','
+import Strategies.csv_delimiter as csv_delimiter
 
 class FileType(Enum):
 	plaintext = 0
@@ -117,8 +116,8 @@ def csvSniffer(filename):
 			if dialect.delimiter in invalidDelimiters:
 				return 0
 			else:
-				global CSV_DELIMETER
-				CSV_DELIMETER = dialect.delimiter
+				csv_delimiter.init(dialect.delimiter)
+				# csv_delimiter.CSV_DELIMETER = dialect.delimiter
 				return 1
 	except:
 		return 0
