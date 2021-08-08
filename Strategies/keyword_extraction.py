@@ -104,6 +104,8 @@ def csv_keyword_extract(data):
     return keyword_extract(data, csv_delimiter.CSV_DELIMITER)
 
 def csv_mutate_input(data, dictionary):
+    if (len(data) < 1 or len(dictionary) < 1):
+        return ""
     random_keyword_index = random.randint(0, len(dictionary)-1)
     random_csv_keyword_index = random.randint(0, len(data)-1)
 
