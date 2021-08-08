@@ -100,7 +100,7 @@ def json_mutate_input(data, dictionary, dict=False):
     return json.dumps(data)
 
 def csv_keyword_extract(data):
-    print(csv_delimiter.CSV_DELIMITER)
+    # print(csv_delimiter.CSV_DELIMITER)
     return keyword_extract(data, csv_delimiter.CSV_DELIMITER)
 
 def csv_mutate_input(data, dictionary):
