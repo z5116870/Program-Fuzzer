@@ -75,12 +75,17 @@ def repeatedParts(testInput, inputtype):
 			# print('-------')
 			# print(tagtext)
 	if(inputtype == FileType.plaintext):
+		with open(testInput) as f:
+			text = f.read()
 		payload = text*10000
 		payloads.append(payload)
 
 	if(inputtype == FileType.jpeg):
 		# Using Pillow (PIL)
+<<<<<<< HEAD
 		# print('jpeg!!')
+=======
+>>>>>>> 26372c18dbc0cdb9b07b836ec7d47cf0483d361f
 		img = Image.open(testInput)
 		# print(img.info)
 		keys = []

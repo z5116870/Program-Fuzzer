@@ -10,9 +10,14 @@ from subprocess import Popen, PIPE
 import signal
 import os
 from enum import Enum
+<<<<<<< HEAD
 from infLoops import infLoop
 from code_coverage import coverage
 
+=======
+from Strategies.infLoops import infLoop
+import shutil
+>>>>>>> 26372c18dbc0cdb9b07b836ec7d47cf0483d361f
 INF_LOOP = 0
 inFile = 'input.txt'
 coverageFlag = False
@@ -32,20 +37,23 @@ strategies_used = {}
 payload_files = {}
 
 def time_out_handler(signum, frame):
-    print("Timing out, program ran for over 5 minutes")
+    print("Timing out, program ran for over 3 minutes")
     raise TimeoutError()
 
 def create_crash_file(data, num):
-    f = open("bad.txt", "wb+")
-    if not isinstance(data, bytearray) and not isinstance(data, bytes):
-        data = bytes(data, 'utf-8')
-    f.write(data)
-    f.close()
+    if (data == ''):
+        os.popen('cp ' + inFile + 'bad.txt')
+    else:
+        f = open("bad.txt", "wb+")
+        if not isinstance(data, bytearray) and not isinstance(data, bytes):
+            data = bytes(data, 'utf-8')
+        f.write(data)
+        f.close()
 
 def runFuzzedInput(text, binary, num, all_errors, strat):
     # Coverage-based approach for hanging/infinite loops
     # Run trace process to check for hang/infinite loop
-    trace = Popen(['strace ' + binary + '<' + inFile], shell=True, stdout = open(os.devnull, 'wb'), stderr = PIPE)
+    trace = Popen(['strace ./' + binary + '<' + inFile], shell=True, stdout = open(os.devnull, 'wb'), stderr = PIPE)
     isOK = infLoop(trace.stderr)
     if(isOK != 1):
         if(not isOK in seen_errors):
@@ -59,8 +67,11 @@ def runFuzzedInput(text, binary, num, all_errors, strat):
         return num, all_errors
     # If no crash, run program
     proc = Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
-    if not isinstance(text, bytearray):
-        text = bytes(text, 'utf-8')
+    try:
+        if not isinstance(text, bytearray):
+            text = bytes(text, 'utf-8')
+    except:
+        text = ''
 
     # Timeout approach for hanging/infinte loops
     try:
@@ -101,7 +112,7 @@ def print_errors_stats(numErrors, all_errors, start_time):
 if __name__ == "__main__":
     start_time = time.time()
     signal.signal(signal.SIGALRM, time_out_handler)
-    signal.alarm(300)
+    signal.alarm(179)
 
     args = len(sys.argv)
     if (args < 3):
@@ -118,41 +129,43 @@ if __name__ == "__main__":
 
 
         filetype = getFileType(filename)
-        with open(filename) as file:
+        with open(filename, errors='ignore') as file:
             f = file.read()
-        inp = open(inFile, 'wb')
+        # inp = open(inFile, 'wb')
         numErrors = 0
         all_errors = 0
         # for each strategy run each fuzzing strategy 5 times
         for i in range(0, 5):
-            fuzzing_data = keyword_fuzzing(filename, filetype)
-            inp = open(inFile, 'w')
-            inp.write(fuzzing_data)
+            fuzzing_data = keyword_fuzzing(filename, filetype, inFile)
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.KEYWORDEXTRACTION)
 
         for i in range(0, 1000):
             fuzzing_data = bit_flipper(bytearray(f, 'utf-8'))
             inp = open(inFile, 'w+b')
             inp.write(fuzzing_data)
+            inp.close()
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.BITFLIP)
 
         for i in range(0, 1000):
             fuzzing_data = byte_flipper(bytearray(f, 'utf-8'))
             inp = open(inFile, 'w+b')
             inp.write(fuzzing_data)
+            inp.close()
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.BYTEFLIP)
 
         for i in range(0, 1000):
             fuzzing_data = special_bytes_flipper(bytearray(f, 'utf-8'))
             inp = open(inFile, 'w+b')
             inp.write(fuzzing_data)
+            inp.close()
             numErrors, all_errors = runFuzzedInput(fuzzing_data, binary, numErrors, all_errors, StrategyType.SPECIALBYTEFLIPS)
 
         # Check for known ints
-        payload = file_replace_one(filename)
+        payload = file_replace_one(filename, filetype)
         for line in payload:
             inp = open(inFile, 'w')
             inp.write(line)
+            inp.close()
             numErrors, all_errors = runFuzzedInput(line, binary, numErrors, all_errors, StrategyType.KNOWNINTS)
 
         # Check for repeated part fuzzing
@@ -160,13 +173,15 @@ if __name__ == "__main__":
         for payload in payloads:
             inp = open(inFile, 'w')
             inp.write(line)
+            inp.close()
             numErrors, all_errors = runFuzzedInput(payload, binary, numErrors, all_errors, StrategyType.REPEATEDPARTS)
 
-	# Check for arithmetic fuzzing
+        # Check for arithmetic fuzzing
         payloads = arithmetic(filename, filetype)
         for payload in payloads:
             inp = open(inFile, 'w')
             inp.write(line)
+            inp.close()
             numErrors, all_errors = runFuzzedInput(payload, binary, numErrors, all_errors, StrategyType.ARITHMETIC)
 
 

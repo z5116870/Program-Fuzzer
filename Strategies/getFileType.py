@@ -117,6 +117,7 @@ def csvSniffer(filename):
 			if dialect.delimiter in invalidDelimiters:
 				return 0
 			else:
+				global CSV_DELIMETER
 				CSV_DELIMETER = dialect.delimiter
 				return 1
 	except:
