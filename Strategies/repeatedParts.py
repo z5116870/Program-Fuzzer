@@ -75,6 +75,8 @@ def repeatedParts(testInput, inputtype):
 			# print('-------')
 			# print(tagtext)
 	if(inputtype == FileType.plaintext):
+		with open(testInput) as f:
+			text = f.read()
 		payload = text*10000
 		payloads.append(payload)
 
