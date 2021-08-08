@@ -25,6 +25,9 @@ def customFileTypeCheck(filename):
 			text = f.read()
 			# print(len(text))
 			# print(text)
+		# treat single digit input as plaintext
+		if (text.isnumeric()):
+			return FileType.plaintext
 
 		if(checkJSON(text)):
 			return FileType.json

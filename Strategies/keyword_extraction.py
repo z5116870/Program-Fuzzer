@@ -115,7 +115,6 @@ def csv_mutate_input(data, dictionary):
         random_keyword_index = 1
 
     if (len(data) == 1):
-        print(data, dictionary)
         data[0] = dictionary[random_keyword_index]
 
     words_to_replace = random.randint(0, len(data) -1)
