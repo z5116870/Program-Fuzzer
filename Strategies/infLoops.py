@@ -49,7 +49,7 @@ def infLoop(buf):
 					start = el
 					posA = index_pos_list[start]
 					if(start == 0):
-						print('reached 0')
+						# print('reached 0')
 						return 1
 					posB = index_pos_list[start - 1]
 					dist = posA - posB

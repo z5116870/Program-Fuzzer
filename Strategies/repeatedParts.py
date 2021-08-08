@@ -48,7 +48,7 @@ def repeatedParts(testInput, inputtype):
 		# First, find all the tags in the xml
 		tags = []
 		for tag in soup.find_all(True):
-			print(tag.name)
+			# print(tag.name)
 			tags.append(tag.name)
 
 		# Method 1, repeat everything between the tags
@@ -65,24 +65,23 @@ def repeatedParts(testInput, inputtype):
 			payload = text[:index] + xmlstr*2 + text[index:]
 
 			# add it to the payloads
-			print(payload)
+			# print(payload)
 			payloads.append(payload)
 			payload = ''
 
 		# Method 2, repeat the tag text, within the tag itself
 		for tag in tags:
 			tagtext = soup.find(tag).text
-			print('-------')
-			print(tagtext)
+			# print('-------')
+			# print(tagtext)
 	if(inputtype == FileType.plaintext):
 		payload = text*10000
 		payloads.append(payload)
 
 	if(inputtype == FileType.jpeg):
 		# Using Pillow (PIL)
-		print('jpeg!!')
 		img = Image.open(testInput)
-		print(img.info)
+		# print(img.info)
 		keys = []
 		values = []
 		for k, v in img.info.items():
@@ -112,8 +111,8 @@ def repeatedParts(testInput, inputtype):
 				payload = base64.b64decode(b"data:image/jpeg;base64," + payload)
 				payloads.append(payload)
 			i += 1
-		print(i)
-		print(b64str)
+		# print(i)
+		# print(b64str)
 
 	if(inputtype == FileType.pdf):
 		# read input as PDF file
@@ -127,7 +126,7 @@ def repeatedParts(testInput, inputtype):
 		for i in range(100):
 			# repeat metadata
 			for k, v in info.items():
-				print(k, ':', v)
+				# print(k, ':', v)
 				# repeat existing keywords
 				mDict.__setitem__(k, v*5)
 
@@ -136,7 +135,7 @@ def repeatedParts(testInput, inputtype):
 				if kword not in mDict:
 					v = ''.join(random.choice(randString) for x in range(8))
 					mDict.__setitem__(kword, v*5)
-			print(mDict)
+			# print(mDict)
 			pdf_writer.addMetadata(mDict)
 			with open('out.pdf', "wb") as f:
 				pdf_writer.write(f)
@@ -145,7 +144,7 @@ def repeatedParts(testInput, inputtype):
 				payload = f.read()
 			payloads.append(payload)
 
-		print(payload)
+		# print(payload)
 	return payloads
 
 def run(binary, testInput):
