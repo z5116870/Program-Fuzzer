@@ -10,14 +10,10 @@ from subprocess import Popen, PIPE
 import signal
 import os
 from enum import Enum
-<<<<<<< HEAD
-from infLoops import infLoop
-from code_coverage import coverage
-
-=======
 from Strategies.infLoops import infLoop
 import shutil
->>>>>>> 26372c18dbc0cdb9b07b836ec7d47cf0483d361f
+from code_coverage import coverage
+
 INF_LOOP = 0
 inFile = 'input.txt'
 coverageFlag = False

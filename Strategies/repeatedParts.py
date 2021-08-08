@@ -82,10 +82,7 @@ def repeatedParts(testInput, inputtype):
 
 	if(inputtype == FileType.jpeg):
 		# Using Pillow (PIL)
-<<<<<<< HEAD
-		# print('jpeg!!')
-=======
->>>>>>> 26372c18dbc0cdb9b07b836ec7d47cf0483d361f
+
 		img = Image.open(testInput)
 		# print(img.info)
 		keys = []

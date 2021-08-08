@@ -65,14 +65,7 @@ def runFuzzedInput(text, binary):
 
 def arithmetic(testInput, type):
 	# Fuzz using the expression grammar
-<<<<<<< HEAD
-	payload = ''
-	payloads = []
-	with open(testInput) as f:
-		text = f.read()
-	# print(text)
-	if(inputtype != FileType.plaintext):
-=======
+
 	if (type == FileType.pdf or type == FileType.elf or type == FileType.jpeg):
 		return []
 	else:
@@ -97,7 +90,6 @@ def arithmetic(testInput, type):
 			expr = simple_grammar_fuzzer(grammar=EXPR_GRAMMAR, max_nonterminals=8)
 			payloads.append(expr)
 
->>>>>>> 26372c18dbc0cdb9b07b836ec7d47cf0483d361f
 		return payloads
 
 # def run(binary, testInput):

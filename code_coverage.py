@@ -112,7 +112,7 @@ class coverage_based_mutation:
         elif(f == 3):
           ss = keyword_fuzzing(input_file, getFileType(input_file))
         elif(f == 4):
-          payload = file_replace_one(input_file)
+          payload = file_replace_one(input_file, getFileType(input_file))
           if(payload):
             ss = payload[random.choice(range(0,len(payload)))]
         elif(f == 5):
@@ -124,7 +124,7 @@ class coverage_based_mutation:
           else:
             ss = bit_flipper(bytearray(input_file_data, 'utf-8'))
         elif(f == 6):
-          payloads = arithmetic(filename, filetype)
+          payloads = arithmetic(filename, getFileType(input_file))
           if(payload):
             # print(payload)
             ss = payload[random.choice(range(0,len(payload)))]
