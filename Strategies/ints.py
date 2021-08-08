@@ -1,6 +1,7 @@
 import sys
 import re
 from subprocess import Popen, PIPE
+from Strategies.getFileType import FileType, CSV_DELIMITER
 
 #replaces all numbers in a file to a desired number
 def replace_all(file, int):
@@ -24,31 +25,34 @@ def file_replace_all(file):
 
 #replaces one number at a time with desired number
 def replace_one(file, replace):
-    with open(file, 'r') as f:
-        wordlist = []
-        nums = []
-        for line in f.readlines():
-            wordlist.append(line)
-            nums += re.findall("[-]?\\d+", line)
+    if (type == FileType.pdf or type == FileType.elf or type == FileType.jpeg):
+        return replace
+    else:
+        with open(file, 'r') as f:
+            wordlist = []
+            nums = []
+            for line in f.readlines():
+                wordlist.append(line)
+                nums += re.findall("[-]?\\d+", line)
 
-    payload = ""
-    for number in nums:
-        for i in range(len(wordlist)):
-            if number in wordlist[i]:
-                temp = wordlist[i].replace(number,str(replace))
-                for x in range(0, i):
-                    if x == i:
+        payload = ""
+        for number in nums:
+            for i in range(len(wordlist)):
+                if number in wordlist[i]:
+                    temp = wordlist[i].replace(number,str(replace))
+                    for x in range(0, i):
+                        if x == i:
+                            break
+                        payload += wordlist[x]
+                    
+                    payload += temp
+
+                    if (i+1) > len(wordlist):
                         break
-                    payload += wordlist[x]
-                
-                payload += temp
-
-                if (i+1) > len(wordlist):
-                    break
-                else:
-                    for y in range(i+1, len(wordlist)):
-                        payload += wordlist[y]
-    return payload
+                    else:
+                        for y in range(i+1, len(wordlist)):
+                            payload += wordlist[y]
+        return payload
 
 def file_replace_one(file):
     payload = []
