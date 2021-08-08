@@ -24,9 +24,9 @@ def file_replace_all(file):
 
 
 #replaces one number at a time with desired number
-def replace_one(file, replace):
+def replace_one(file, replace, type):
     if (type == FileType.pdf or type == FileType.elf or type == FileType.jpeg):
-        return replace
+        return ""
     else:
         with open(file, 'r') as f:
             wordlist = []
@@ -54,14 +54,14 @@ def replace_one(file, replace):
                             payload += wordlist[y]
         return payload
 
-def file_replace_one(file):
+def file_replace_one(file, type):
     payload = []
-    payload.append(replace_one(file, 0))
-    payload.append(replace_one(file, -1))
-    payload.append(replace_one(file, 99999))
-    payload.append(replace_one(file, -99999))
-    payload.append(replace_one(file, 1.5))
-    payload.append(replace_one(file, -1.5))
+    payload.append(replace_one(file, 0, type))
+    payload.append(replace_one(file, -1, type))
+    payload.append(replace_one(file, 99999, type))
+    payload.append(replace_one(file, -99999,type))
+    payload.append(replace_one(file, 1.5, type))
+    payload.append(replace_one(file, -1.5, type))
 
     return payload
 

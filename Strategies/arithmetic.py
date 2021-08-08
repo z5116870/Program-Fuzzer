@@ -63,29 +63,32 @@ def runFuzzedInput(text, binary):
 	output, error = proc.communicate(bytes(text, 'utf-8'))
 	return(proc.returncode)
 
-def arithmetic(testInput, inputtype):
+def arithmetic(testInput, type):
 	# Fuzz using the expression grammar
-	payload = ''
-	payloads = []
-	with open(testInput) as f:
-		text = f.read()
-	print(text)
-	
-	assert nonterminals("<term> * <factor>") == ["<term>", "<factor>"]
-	assert nonterminals("<digit><integer>") == ["<digit>", "<integer>"]
-	assert nonterminals("1 < 3 > 2") == []
-	assert nonterminals("1 <3> 2") == ["<3>"]
-	assert nonterminals("1 + 2") == []
-	assert nonterminals(("<1>", {'option': 'value'})) == ["<1>"]
-	assert is_nonterminal("<abc>")
-	assert is_nonterminal("<symbol-1>")
-	assert not is_nonterminal("+")
+	if (type == FileType.pdf or type == FileType.elf or type == FileType.jpeg):
+		return []
+	else:
+		payload = ''
+		payloads = []
+		with open(testInput) as f:
+			text = f.read()
+		print(text)
+		
+		assert nonterminals("<term> * <factor>") == ["<term>", "<factor>"]
+		assert nonterminals("<digit><integer>") == ["<digit>", "<integer>"]
+		assert nonterminals("1 < 3 > 2") == []
+		assert nonterminals("1 <3> 2") == ["<3>"]
+		assert nonterminals("1 + 2") == []
+		assert nonterminals(("<1>", {'option': 'value'})) == ["<1>"]
+		assert is_nonterminal("<abc>")
+		assert is_nonterminal("<symbol-1>")
+		assert not is_nonterminal("+")
 
-	for i in range(10):
-		expr = simple_grammar_fuzzer(grammar=EXPR_GRAMMAR, max_nonterminals=8)
-		payloads.append(expr)
+		for i in range(10):
+			expr = simple_grammar_fuzzer(grammar=EXPR_GRAMMAR, max_nonterminals=8)
+			payloads.append(expr)
 
-	return payloads
+		return payloads
 
 def run(binary, testInput):
 	print("making fuzzed inputs...")
