@@ -18,10 +18,12 @@ from Strategies.getFileType import FileType, getFileType
 from Strategies.arithmetic import arithmetic
 # from rp2 import repeatedParts
 
-target_file = sys.argv[1]
-input_file = sys.argv[2]
+# target_file = sys.argv[1]
+# input_file = sys.argv[2]
 dummy_file = "mutated.txt"
 crash_directory = "coverage_crashes/"
+
+global input_file
 
 # with open(input_file) as file:
 #   input_file_data = file.read()
@@ -71,14 +73,25 @@ class coverage_based_mutation:
             self.init_flag = False
 
         set = 0
+        gainFlag = False
         for data, current in self.collection:
             if current - self.current:
                 self.cache.append((data, current))
                 set += 1
+                gainFlag = True
 
-        print('New mutated inputs added to collection {:d} '.format(set))
+        if(gainFlag):
+          print("Gain in code coverage")
+          print('New mutated inputs added to collection after gaining coverage: {:d} '.format(set))
+
         for _, item in self.collection:
           self.current.update(item)
+
+        if(gainFlag == False):
+          for i in range(int(len(self.collection)*0.1)):
+            self.cache.append(self.collection[i])
+
+          print("No coverage gained in this round. Adding new input from current round.")
 
         self.collection = []
 
@@ -87,7 +100,10 @@ class coverage_based_mutation:
           item,_ = self.cache.pop()
           for _ in range(100):
             self.mutated_inputs.append(coverage_based_mutation.mutate_inputs(item))
+        for _ in range(100):
             self.mutated_inputs.append(coverage_based_mutation.mutate_inputs())
+            # print(len(self.mutated_inputs))
+
 
     def update_collection(self, data, cvg = None):
         self.collection.append((data, cvg))
@@ -146,13 +162,19 @@ def save_crash_files():
         os.mkdir(crash_directory)
 
     bFlag = True
+    unique_inputs = set()
+    counter = 0
     for address, m_input in crash_list.items():
         if(bFlag):
           create_crash_file(m_input)
           bFlag = False
-        file = 'crash_{}.txt'.format(hex(address))
-        with open(os.path.join(crash_directory, file), 'wb+') as fh:
-          fh.write(m_input)
+        unique_inputs.add(m_input)
+
+    for item in unique_inputs:
+      file = 'crash_{}.txt'.format(counter)
+      with open(os.path.join(crash_directory, file), 'wb+') as fh:
+        fh.write(item)
+      counter += 1
 
 
 def fuzz(dbg, data, bpmap, binary):
@@ -203,7 +225,7 @@ def fuzz(dbg, data, bpmap, binary):
         # info = traceProc.backtrace()
         crash_pointer = traceProc.getInstrPointer() - 1
         if(crash_pointer not in crash_addr):
-          print("SEGFAULT at: ", hex(crash_pointer))
+          # print("SEGFAULT at: ", hex(crash_pointer))
           crash_addr.add(crash_pointer)
         crash_list[crash_pointer] = bytes(data,'utf-8')
         traceProc.detach()
@@ -212,7 +234,7 @@ def fuzz(dbg, data, bpmap, binary):
       elif traceProcEvent.signum == signal.SIGFPE:
         crash_pointer = traceProc.getInstrPointer() - 1
         if(crash_pointer not in crash_addr):
-          print("SIGFPE at: ", hex(crash_pointer))
+          # print("SIGFPE at: ", hex(crash_pointer))
           crash_addr.add(crash_pointer)
         crash_list[crash_pointer] = bytes(data,'utf-8')
         traceProc.detach()
@@ -249,6 +271,10 @@ def coverage(binary, filename):
 
     global input_file_data
 
+    global input_file
+
+    input_file = filename
+    
     with open(filename) as file:
       input_file_data = file.read()
 
@@ -266,7 +292,7 @@ def coverage(binary, filename):
         print('#{:3d} Coverage {:.2f}%\r'.format(
             counter, (len(coverage)/len(breakpoints)) * 100), end='')
 
-        if(time.time() - start_time >= 180):
+        if(time.time() - start_time >= 178):
           break
 
     save_crash_files()
