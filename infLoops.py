@@ -18,7 +18,7 @@ def infLoop(buf):
 			syscalls.append(line)
 			# After 2 seconds has passed if strace still executing,
 			# Check to see if pattern can be found from last found syscalls
-			if(time.time() - timeElapsed > 0.2):
+			if(time.time() - timeElapsed > 0.05):
 				syscall = syscalls[-1] # last element
 				#print('callin')
 				timeElapsed = time.time()

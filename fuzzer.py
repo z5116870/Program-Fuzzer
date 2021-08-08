@@ -52,7 +52,7 @@ def runFuzzedInput(text, binary, num, all_errors, strat):
             seen_errors[isOK] = error;
             strategies_used[isOK] = strat.name
             payload_files[isOK] = "bad" + str(num) + ".txt"
-            return num + 1, all_errors
+            return num + 1, all_errors + 1
         return num, all_errors
     # If no crash, run program
     proc = Popen([binary], shell=True, stdin = PIPE, stdout = PIPE, stderr = PIPE)
@@ -61,7 +61,7 @@ def runFuzzedInput(text, binary, num, all_errors, strat):
 
     # Timeout approach for hanging/infinte loops
     try:
-        _, error = proc.communicate(text, timeout=0.6)
+        _, error = proc.communicate(text, timeout=0.1)
         if error and proc.returncode != 0:
             all_errors += 1;
             if not proc.returncode in seen_errors:
@@ -108,7 +108,6 @@ if __name__ == "__main__":
         filename = sys.argv[2]
 
         filetype = getFileType(filename)
-
         with open(filename) as file:
             f = file.read()
         inp = open(inFile, 'wb')
