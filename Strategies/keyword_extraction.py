@@ -50,7 +50,7 @@ def xml_remove_closing_tags(data_str):
     return new_str
 
 def xml_format_str_insert(data_str):
-    print(data_str)
+    # print(data_str)
     new_str = re.sub('\"(.*?)\"', "'%n'", data_str)
     return new_str
 
@@ -148,11 +148,11 @@ def keyword_fuzzing(input, type = None, mutations = None, output_file = None):
     if type == FileType.json:
         data = json.load(file)
         dictionary = json_keyword_extract(data)
-        dictionary += ["%n"]
+        # dictionary += ["%n"]
         fuzzed_output = json_mutate_input(data, dictionary)
     elif type == FileType.csv:
         dictionary, file_data = csv_keyword_extract(file)
-        dictionary += ["%n"]
+        # dictionary += ["%n"]
         fuzzed_output = csv_mutate_input(file_data, dictionary)
     elif type == FileType.elf:
         # Need to a file to save in if we want a modified elf
@@ -204,7 +204,7 @@ def keyword_fuzzing(input, type = None, mutations = None, output_file = None):
         json_dict = xmlfile_to_json(data_str)
         # use json mutation plus custom dictionary
         dictionary = json_keyword_extract(json_dict)
-        dictionary += ["%n"]
+        # dictionary += ["%n"]
         fuzzed_output_dict = json_mutate_input(json_dict, dictionary, dict=True) 
         # convert json back to xml
         fuzzed_output = json_dict_to_xml(fuzzed_output_dict)
@@ -222,7 +222,7 @@ def keyword_fuzzing(input, type = None, mutations = None, output_file = None):
         dictionary += ["longlonglongword", "%n","Admin", "admin", "ADMIN", "password", "sudo"]
         # replace words with same strategy as csv
         fuzzed_output = csv_mutate_input(file_data, dictionary)
-        print(fuzzed_output)
+        # print(fuzzed_output)
     elif type == FileType.jpeg:
         # Need to a file to save in if we want a modified jpeg
         if (output_file != None):
@@ -239,11 +239,11 @@ def keyword_fuzzing(input, type = None, mutations = None, output_file = None):
                         for key in dir(jpeg_img):
                             jpeg_img.set(key, -1)
                     except:
-                        print("JPEG metadata update failed")
+                        print("Keyword extraction: JPEG metadata update failed")
                 with open(output_file, "wb") as new_img:
                         new_img.write(jpeg_img.get_file())
     else:
-        print("Type not supported")
+        # print("Type not supported")
         for line in file:
             fuzzed_output += line
     file.close()
