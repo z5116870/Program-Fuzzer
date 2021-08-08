@@ -1,7 +1,7 @@
 import sys
 import re
 from subprocess import Popen, PIPE
-from Strategies.getFileType import FileType, CSV_DELIMITER
+from Strategies.getFileType import FileType
 
 #replaces all numbers in a file to a desired number
 def replace_all(file, int):
