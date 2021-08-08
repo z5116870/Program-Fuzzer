@@ -70,7 +70,8 @@ def arithmetic(testInput, inputtype):
 	with open(testInput) as f:
 		text = f.read()
 	print(text)
-	
+	if(inputtype != FileType.plaintext):
+		return payloads
 	assert nonterminals("<term> * <factor>") == ["<term>", "<factor>"]
 	assert nonterminals("<digit><integer>") == ["<digit>", "<integer>"]
 	assert nonterminals("1 < 3 > 2") == []
@@ -81,7 +82,7 @@ def arithmetic(testInput, inputtype):
 	assert is_nonterminal("<symbol-1>")
 	assert not is_nonterminal("+")
 
-	for i in range(10):
+	for i in range(100):
 		expr = simple_grammar_fuzzer(grammar=EXPR_GRAMMAR, max_nonterminals=8)
 		payloads.append(expr)
 
@@ -122,4 +123,3 @@ def printStats(crashes, badpload, codes):
 			u.append(i)
 	print("CAUGHT CODES: ", u)
 
-#run(sys.argv[1], sys.argv[2])
