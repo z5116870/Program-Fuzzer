@@ -109,7 +109,7 @@ def csv_mutate_input(data, dictionary):
 
     # 1 in 4 runs don't do a random mutation
     global RUN_COUNT
-    if (RUN_COUNT % 4 == 0):
+    if (RUN_COUNT % 4 == 0  and len(dictionary) >= 2):
         random_keyword_index = 1
 
     if (len(data) == 1):
