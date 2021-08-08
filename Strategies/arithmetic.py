@@ -45,8 +45,8 @@ def simple_grammar_fuzzer(grammar, start_symbol=START_SYMBOL,
 
         if len(nonterminals(new_term)) < max_nonterminals:
             term = new_term
-            # if log:
-                # print("%-40s" % (symbol_to_expand + " -> " + expansion), term)
+            if log:
+                print("%-40s" % (symbol_to_expand + " -> " + expansion), term)
             expansion_trials = 0
         else:
             expansion_trials += 1
@@ -63,30 +63,27 @@ def runFuzzedInput(text, binary):
 	output, error = proc.communicate(bytes(text, 'utf-8'))
 	return(proc.returncode)
 
-def arithmetic(testInput, filetype):
+def arithmetic(testInput, inputtype):
 	# Fuzz using the expression grammar
-
-	if(filetype != FileType.plaintext or filetype != FileType.csv):
-		return []
-	else:
-		payload = ''
-		payloads = []
-		with open(testInput) as f:
-			text = f.read()
-
-		assert nonterminals("<term> * <factor>") == ["<term>", "<factor>"]
-		assert nonterminals("<digit><integer>") == ["<digit>", "<integer>"]
-		assert nonterminals("1 < 3 > 2") == []
-		assert nonterminals("1 <3> 2") == ["<3>"]
-		assert nonterminals("1 + 2") == []
-		assert nonterminals(("<1>", {'option': 'value'})) == ["<1>"]
-		assert is_nonterminal("<abc>")
-		assert is_nonterminal("<symbol-1>")
-		assert not is_nonterminal("+")
-
-		for i in range(10):
-			expr = simple_grammar_fuzzer(grammar=EXPR_GRAMMAR, max_nonterminals=8)
-			payloads.append(expr)
-
-		print(payloads)
+	payload = ''
+	payloads = []
+	if(inputtype != FileType.plaintext and inputtype != FileType.csv):
 		return payloads
+	with open(testInput) as f:
+		text = f.read()
+
+	assert nonterminals("<term> * <factor>") == ["<term>", "<factor>"]
+	assert nonterminals("<digit><integer>") == ["<digit>", "<integer>"]
+	assert nonterminals("1 < 3 > 2") == []
+	assert nonterminals("1 <3> 2") == ["<3>"]
+	assert nonterminals("1 + 2") == []
+	assert nonterminals(("<1>", {'option': 'value'})) == ["<1>"]
+	assert is_nonterminal("<abc>")
+	assert is_nonterminal("<symbol-1>")
+	assert not is_nonterminal("+")
+
+	for i in range(100):
+		expr = simple_grammar_fuzzer(grammar=EXPR_GRAMMAR, max_nonterminals=8)
+		payloads.append(expr)
+
+	return payloads
