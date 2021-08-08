@@ -1,13 +1,9 @@
 # from pwn import *
 import sys
 from subprocess import Popen, PIPE
-#from getFileType import FileType, getFileType
 from Strategies.getFileType import FileType, getFileType
 from bs4 import BeautifulSoup as BS
 from PIL import Image, ExifTags
-import piexif
-import pyexiv2
-import re
 import base64
 import os,binascii
 import PyPDF2
@@ -28,25 +24,6 @@ def runFuzzedInput(text, binary, inputtype):
 		output, error = proc.communicate(bytes(text, 'utf-8'))
 	return(proc.returncode, error)
 
-# JSON
-'''
-if(inputtype == TYPE_JSON):
-	payload += '{'
-	# Repeat first key/val pair
-	with open(testInput) as f:
-		text = f.read()
-		res = 0
-		for i in range(0, len(text)):
-			if text[i] == ',':
-				res = i + 1
-				break
-		# add the repeat
-		payload += text[1:res] * 2
-		# put the rest of the payload
-		payload += text[res:]
-	print(payload)
-'''
-# CSV
 def repeatedParts(testInput, inputtype):
 
 	# Fuzz depending on input type
@@ -208,5 +185,3 @@ def printStats(crashes, badpload, codes, errors):
 			u.append(i)
 	print("CAUGHT CODES: ", u)
 	print("CAUGHT ERRORS: ", errors)
-
-#run(sys.argv[1], sys.argv[2])

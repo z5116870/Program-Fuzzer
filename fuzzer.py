@@ -10,7 +10,7 @@ from subprocess import Popen, PIPE
 import signal
 import os
 from enum import Enum
-from test import infLoop
+from Strategies.infLoops import infLoop
 INF_LOOP = 0
 inFile = 'input.txt'
 
@@ -108,7 +108,6 @@ if __name__ == "__main__":
         filename = sys.argv[2]
 
         filetype = getFileType(filename)
-
         with open(filename, errors='ignore') as file:
             f = file.read()
         # inp = open(inFile, 'wb')
