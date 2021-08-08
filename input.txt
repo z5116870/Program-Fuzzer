@@ -3,7 +3,7 @@
         <link href="http://somewebsite.com" />
     </head>
     <body>
-        <h1>K'm not a web developer. still</h1>
+        <h1>I'm not a web developer. still</h1>
     </body>
 
     <div id="#lol">
@@ -12,6 +12,6 @@
 
 
     <tail>
-        <a href="http://bing.com">Footer link</a>
+  $     <a href="http://bing.com">Footer link</a>
     </tail>
 </html>
