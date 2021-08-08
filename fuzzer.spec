@@ -1,14 +1,23 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_all
+
+datas = [('/home/s/.local/lib/python3.6/site-packages/pwnlib/shellcraft/templates/__doc__', 'pwnlib/shellcraft/templates')]
+binaries = []
+hiddenimports = []
+tmp_ret = collect_all('pwnlib')
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
+tmp_ret = collect_all('pwn')
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 block_cipher = None
 
 
 a = Analysis(['fuzzer.py'],
-             pathex=['/media/sf_COMP6447_shared/fuzzer'],
-             binaries=[],
-             datas=[],
-             hiddenimports=[],
+             pathex=['/home/s/.local/lib/python3.6/site-packages', '/media/sf_COMP6447_shared/fuzzer'],
+             binaries=binaries,
+             datas=datas,
+             hiddenimports=hiddenimports,
              hookspath=[],
              hooksconfig={},
              runtime_hooks=[],

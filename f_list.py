@@ -3,7 +3,7 @@
 import argparse
 import sys
 # import binaryninja as bn
-from pwn import *
+from pwn import ELF, process
 
 address = "./Binaries/jpg1"
 
