@@ -10,9 +10,12 @@ from subprocess import Popen, PIPE
 import signal
 import os
 from enum import Enum
-from test import infLoop
+from infLoops import infLoop
+from code_coverage import coverage
+
 INF_LOOP = 0
 inFile = 'input.txt'
+coverageFlag = False
 
 class StrategyType(Enum):
     BITFLIP = 0
@@ -106,6 +109,13 @@ if __name__ == "__main__":
     else:
         binary = sys.argv[1]
         filename = sys.argv[2]
+        if(len(sys.argv) == 4):
+            cvgFlag = sys.argv[3]
+            if(cvgFlag):
+                if(cvgFlag == "-c"):
+                    coverage(binary, filename)
+                    exit(1)
+
 
         filetype = getFileType(filename)
         with open(filename) as file:

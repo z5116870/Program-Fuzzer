@@ -48,7 +48,7 @@ def repeatedParts(testInput, inputtype):
 		# First, find all the tags in the xml
 		tags = []
 		for tag in soup.find_all(True):
-			print(tag.name)
+			# print(tag.name)
 			tags.append(tag.name)
 
 		# Method 1, repeat everything between the tags
@@ -65,24 +65,24 @@ def repeatedParts(testInput, inputtype):
 			payload = text[:index] + xmlstr*2 + text[index:]
 
 			# add it to the payloads
-			print(payload)
+			# print(payload)
 			payloads.append(payload)
 			payload = ''
 
 		# Method 2, repeat the tag text, within the tag itself
 		for tag in tags:
 			tagtext = soup.find(tag).text
-			print('-------')
-			print(tagtext)
+			# print('-------')
+			# print(tagtext)
 	if(inputtype == FileType.plaintext):
 		payload = text*10000
 		payloads.append(payload)
 
 	if(inputtype == FileType.jpeg):
 		# Using Pillow (PIL)
-		print('jpeg!!')
+		# print('jpeg!!')
 		img = Image.open(testInput)
-		print(img.info)
+		# print(img.info)
 		keys = []
 		values = []
 		for k, v in img.info.items():
@@ -112,8 +112,8 @@ def repeatedParts(testInput, inputtype):
 				payload = base64.b64decode(b"data:image/jpeg;base64," + payload)
 				payloads.append(payload)
 			i += 1
-		print(i)
-		print(b64str)
+		# print(i)
+		# print(b64str)
 
 	if(inputtype == FileType.pdf):
 		# read input as PDF file
@@ -127,7 +127,7 @@ def repeatedParts(testInput, inputtype):
 		for i in range(100):
 			# repeat metadata
 			for k, v in info.items():
-				print(k, ':', v)
+				# print(k, ':', v)
 				# repeat existing keywords
 				mDict.__setitem__(k, v*5)
 
@@ -136,7 +136,7 @@ def repeatedParts(testInput, inputtype):
 				if kword not in mDict:
 					v = ''.join(random.choice(randString) for x in range(8))
 					mDict.__setitem__(kword, v*5)
-			print(mDict)
+			# print(mDict)
 			pdf_writer.addMetadata(mDict)
 			with open('out.pdf', "wb") as f:
 				pdf_writer.write(f)
@@ -145,43 +145,43 @@ def repeatedParts(testInput, inputtype):
 				payload = f.read()
 			payloads.append(payload)
 
-		print(payload)
+		# print(payload)
 	return payloads
 
-def run(binary, testInput):
-	print("making fuzzed inputs...")
-	inputtype = getFileType(testInput)
-	payloads = repeatedParts(testInput, inputtype)
-	print("Done.")
-	badpload = []
-	codes = []
-	errors = []
-	crashes = 0
-	# p = process(binary)
-	print("running fuzzed inputs...: " + binary)
-	for payload in payloads:
-		retCode, error = runFuzzedInput(payload, binary, inputtype)
-		if(retCode != 0):
-			crashes += 1
-			badpload.append(payload)
-			codes.append(retCode)
-			errors.append(error)
-	printStats(crashes, badpload, codes, errors)
+# def run(binary, testInput):
+# 	# print("making fuzzed inputs...")
+# 	inputtype = getFileType(testInput)
+# 	payloads = repeatedParts(testInput, inputtype)
+# 	# print("Done.")
+# 	badpload = []
+# 	codes = []
+# 	errors = []
+# 	crashes = 0
+# 	# p = process(binary)
+# 	# print("running fuzzed inputs...: " + binary)
+# 	for payload in payloads:
+# 		retCode, error = runFuzzedInput(payload, binary, inputtype)
+# 		if(retCode != 0):
+# 			crashes += 1
+# 			badpload.append(payload)
+# 			codes.append(retCode)
+# 			errors.append(error)
+# 	printStats(crashes, badpload, codes, errors)
 
-def printStats(crashes, badpload, codes, errors):
-	print("---STATS---")
-	print("CRASHES: ", crashes)
-	print("CAUGHT PAYLOADS:")
-	i = 0
-	x = 0
-	#for pload in badpload:
-		#print(x,': ', pload)
-		#x += 1
+# def printStats(crashes, badpload, codes, errors):
+# 	print("---STATS---")
+# 	print("CRASHES: ", crashes)
+# 	print("CAUGHT PAYLOADS:")
+# 	i = 0
+# 	x = 0
+# 	#for pload in badpload:
+# 		#print(x,': ', pload)
+# 		#x += 1
 
-	# print only unique codes
-	u = []
-	for i in codes:
-		if i not in u:
-			u.append(i)
-	print("CAUGHT CODES: ", u)
-	print("CAUGHT ERRORS: ", errors)
+# 	# print only unique codes
+# 	u = []
+# 	for i in codes:
+# 		if i not in u:
+# 			u.append(i)
+# 	print("CAUGHT CODES: ", u)
+# 	print("CAUGHT ERRORS: ", errors)

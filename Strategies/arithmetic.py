@@ -45,8 +45,8 @@ def simple_grammar_fuzzer(grammar, start_symbol=START_SYMBOL,
 
         if len(nonterminals(new_term)) < max_nonterminals:
             term = new_term
-            if log:
-                print("%-40s" % (symbol_to_expand + " -> " + expansion), term)
+            # if log:
+                # print("%-40s" % (symbol_to_expand + " -> " + expansion), term)
             expansion_trials = 0
         else:
             expansion_trials += 1
@@ -69,7 +69,7 @@ def arithmetic(testInput, inputtype):
 	payloads = []
 	with open(testInput) as f:
 		text = f.read()
-	print(text)
+	# print(text)
 	if(inputtype != FileType.plaintext):
 		return payloads
 	assert nonterminals("<term> * <factor>") == ["<term>", "<factor>"]
@@ -88,38 +88,38 @@ def arithmetic(testInput, inputtype):
 
 	return payloads
 
-def run(binary, testInput):
-	print("making fuzzed inputs...")
-	inputtype = getFileType(testInput)
-	payloads = arithmetic(testInput, inputtype)
-	print("Done.")
-	badpload = []
-	codes = []
-	crashes = 0
-	# p = process(binary)
-	print("running fuzzed inputs...: " + binary)
-	for payload in payloads:
-		retCode = runFuzzedInput(payload, binary)
-		if(retCode != 0):
-			crashes += 1
-			badpload.append(payload)
-			codes.append(retCode)
-	printStats(crashes, badpload, codes)
+# def run(binary, testInput):
+# 	print("making fuzzed inputs...")
+# 	inputtype = getFileType(testInput)
+# 	payloads = arithmetic(testInput, inputtype)
+# 	print("Done.")
+# 	badpload = []
+# 	codes = []
+# 	crashes = 0
+# 	# p = process(binary)
+# 	print("running fuzzed inputs...: " + binary)
+# 	for payload in payloads:
+# 		retCode = runFuzzedInput(payload, binary)
+# 		if(retCode != 0):
+# 			crashes += 1
+# 			badpload.append(payload)
+# 			codes.append(retCode)
+# 	printStats(crashes, badpload, codes)
 
-def printStats(crashes, badpload, codes):
-	print("---STATS---")
-	print("CRASHES: ", crashes)
-	print("CAUGHT PAYLOADS:")
-	i = 0
-	x = 0
-	for pload in badpload:
-		print(x,': ', pload)
-		x += 1
+# def printStats(crashes, badpload, codes):
+# 	print("---STATS---")
+# 	print("CRASHES: ", crashes)
+# 	print("CAUGHT PAYLOADS:")
+# 	i = 0
+# 	x = 0
+# 	for pload in badpload:
+# 		print(x,': ', pload)
+# 		x += 1
 
-	# print only unique codes
-	u = []
-	for i in codes:
-		if i not in u:
-			u.append(i)
-	print("CAUGHT CODES: ", u)
+# 	# print only unique codes
+# 	u = []
+# 	for i in codes:
+# 		if i not in u:
+# 			u.append(i)
+# 	print("CAUGHT CODES: ", u)
 
