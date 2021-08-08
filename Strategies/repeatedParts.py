@@ -28,25 +28,6 @@ def runFuzzedInput(text, binary, inputtype):
 		output, error = proc.communicate(bytes(text, 'utf-8'))
 	return(proc.returncode, error)
 
-# JSON
-'''
-if(inputtype == TYPE_JSON):
-	payload += '{'
-	# Repeat first key/val pair
-	with open(testInput) as f:
-		text = f.read()
-		res = 0
-		for i in range(0, len(text)):
-			if text[i] == ',':
-				res = i + 1
-				break
-		# add the repeat
-		payload += text[1:res] * 2
-		# put the rest of the payload
-		payload += text[res:]
-	print(payload)
-'''
-# CSV
 def repeatedParts(testInput, inputtype):
 
 	# Fuzz depending on input type
